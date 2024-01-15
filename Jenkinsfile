@@ -1,57 +1,61 @@
-podTemplate(label: 'docker-build', 
-  containers: [
-    containerTemplate(
-      name: 'git',
-      image: 'alpine/git',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-    containerTemplate(
-      name: 'docker',
-      image: 'docker',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-  ],
-  volumes: [ 
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
-  ]
-) {
-    node('docker-build') {
-        def dockerHubCred = credentials('docker-cerd')  // Jenkins에서 설정한 Credential ID 사용
-        def appImage
-        
-        stage('Checkout'){
-            container('git'){
-                checkout scm
-            }
+pipeline {
+    agent {
+        kubernetes {
+            label 'docker-build'
+            defaultContainer 'docker'
         }
-        
-        stage('Build'){
-            container('docker'){
-                script {
-                    appImage = docker.build("ongiv/node-hello-world")  // 도커 허브 ID 사용
+    }
+
+    environment {
+        dockerHubCred = 'docker-cerd' // Credential ID
+        registry = "ongiv"
+        imageName = "node-hello-world"
+        dockerImage = "${registry}/${imageName}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                container('git') {
+                    checkout scm
                 }
             }
         }
-        
-        stage('Test'){
-            container('docker'){
-                script {
-                    appImage.inside {
-                        sh 'npm install'
-                        sh 'npm test'
+
+        stage('Build') {
+            steps {
+                container('docker') {
+                    script {
+                        // Build Docker image
+                        appImage = docker.build(dockerImage)
                     }
                 }
             }
         }
 
-        stage('Push'){
-            container('docker'){
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', dockerHubCred){
-                        appImage.push("${env.BUILD_NUMBER}")
-                        appImage.push("latest")
+        stage('Test') {
+            steps {
+                container('docker') {
+                    script {
+                        // Run tests inside Docker container
+                        appImage.inside {
+                            sh 'npm install'
+                            sh 'npm test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push') {
+            steps {
+                container('docker') {
+                    script {
+                        // Push Docker image to Docker Hub
+                        withCredentials([usernamePassword(credentialsId: dockerHubCred, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                            sh "docker push $dockerImage"
+                        }
                     }
                 }
             }

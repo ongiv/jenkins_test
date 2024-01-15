@@ -1,8 +1,6 @@
 pipeline {
     agent {
-        kubernetes {
-            label 'docker-build'
-        }
+        label 'docker-build'
     }
     environment {
         dockerHubCred = 'docker-cerd' // Credential ID

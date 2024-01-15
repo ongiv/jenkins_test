@@ -18,7 +18,7 @@ podTemplate(label: 'docker-build',
   ]
 ) {
     node('docker-build') {
-        def dockerHubCred = <your_dockerhub_cred>
+        def dockerHubCred = credentials('docker-cerd')  // Jenkins에서 설정한 Credential ID 사용
         def appImage
         
         stage('Checkout'){
@@ -30,7 +30,7 @@ podTemplate(label: 'docker-build',
         stage('Build'){
             container('docker'){
                 script {
-                    appImage = docker.build("<your-dockerhub-id>/node-hello-world")
+                    appImage = docker.build("ongiv/node-hello-world")  // 도커 허브 ID 사용
                 }
             }
         }
@@ -57,5 +57,5 @@ podTemplate(label: 'docker-build',
             }
         }
     }
-    
 }
+

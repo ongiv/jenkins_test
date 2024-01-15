@@ -1,11 +1,7 @@
 pipeline {
     agent {
-        kubernetes {
-            label 'docker-build'
-            defaultContainer 'docker'
-        }
+        label 'docker-build'
     }
-
     environment {
         dockerHubCred = 'docker-cerd' // Credential ID
         registry = "ongiv"

@@ -3,7 +3,7 @@ pipeline {
     environment {
         dockerHubCred = 'docker-cerd' // Credential ID
         registry = "ongiv"
-        imageName = "node-hello-world"
+        imageName = "test"
         dockerImage = "${registry}/${imageName}"
     }
 

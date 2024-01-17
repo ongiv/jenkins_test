@@ -1,58 +1,36 @@
-podTemplate(label: 'docker-build',
-  containers: [
-    containerTemplate(
-      name: 'git',
-      image: 'alpine/git',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-    containerTemplate(
-      name: 'docker',
-      image: 'docker',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-  ],
-  volumes: [
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
-  ]
-) {
-    node('docker-build') {
-        def dockerHubCred = 'docker-cerd'
-        def appImage
-
-        stage('Checkout'){
-            container('git'){
-                checkout scm
-            }
-        }
-
-        stage('Build'){
-            container('docker'){
-                script {
-                    appImage = docker.build("ongiv/was_test")  // 도커 허브 ID 사용
+pipeline {
+    agent none
+    
+    stages {
+        stage('Build and Push to Docker Hub') {
+            agent {
+                kubernetes {
+                    label 'docker-build'
+                    defaultContainer 'docker'
                 }
             }
-        }
 
-        stage('Test'){
-            container('docker'){
-                script {
-                    appImage.inside {
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
-                }
+            environment {
+                DOCKER_HUB_CRED = credentials('docker-cerd') // Docker Hub Credential ID
+                IMAGE_NAME = "ongiv/was_test"
             }
-        }
 
-        stage('Push'){
-            container('docker'){
+            steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', dockerHubCred){
-                        appImage.push("${env.BUILD_NUMBER}")
-                        appImage.push("latest")
+                    // 레포지토리 체크아웃
+                    checkout scm
+
+                    // Docker 이미지 빌드
+                    def appImage = docker.build(IMAGE_NAME)
+
+                    // Docker Hub에 로그인
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CRED, usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                        sh "docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD"
                     }
+
+                    // Docker 이미지를 Docker Hub에 푸시
+                    appImage.push("${env.BUILD_NUMBER}")
+                    appImage.push("latest")
                 }
             }
         }

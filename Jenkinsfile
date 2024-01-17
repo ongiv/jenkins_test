@@ -3,10 +3,10 @@ podTemplate(label: 'docker-build',
   containers: [
     containerTemplate(
       name: 'git',
-      image: 'alpine/git',
+      image: 'node:14-alpine',
       command: 'cat',
       ttyEnabled: true,
-      alwaysPullImage: true 
+      alwaysPullImage: true
     ),
     containerTemplate(
       name: 'docker',
@@ -25,6 +25,8 @@ podTemplate(label: 'docker-build',
 
         stage('Checkout'){
             container('git'){
+                // Git 설치
+                sh 'apk add --update git'
                 checkout scm
             }
         }
@@ -32,7 +34,7 @@ podTemplate(label: 'docker-build',
         stage('Build'){
             container('docker'){
                 script {
-                    appImage = docker.build("ongiv/hello_jenkins:latest") 
+                    appImage = docker.build("ongiv/hello_jenkins")
                 }
             }
         }

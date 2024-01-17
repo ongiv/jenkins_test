@@ -1,4 +1,4 @@
-PodTemplate(label: 'docker-build',
+podTemplate(label: 'docker-build',
   cloud: "kubernetes",
   containers: [
     containerTemplate(

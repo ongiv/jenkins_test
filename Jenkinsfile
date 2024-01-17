@@ -5,11 +5,12 @@ podTemplate(label: 'docker-build',
       name: 'git',
       image: 'alpine/git',
       command: 'cat',
-      ttyEnabled: true
+      ttyEnabled: true,
+      alwaysPullImage: true 
     ),
     containerTemplate(
       name: 'docker',
-      image: 'docker',
+      image: 'docker:dind',
       command: 'cat',
       ttyEnabled: true
     ),

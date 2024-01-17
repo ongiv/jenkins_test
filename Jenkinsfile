@@ -1,4 +1,4 @@
-podTemplate(label: 'docker-build',
+podTemplate(label: 'jenkins',
   containers: [
     containerTemplate(
       name: 'git',

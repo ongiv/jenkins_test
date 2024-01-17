@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'docker-build'
-    }
+    agent any
     environment {
         dockerHubCred = 'docker-cerd' // Credential ID
         registry = "ongiv"

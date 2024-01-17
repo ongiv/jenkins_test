@@ -1,59 +1,60 @@
-pipeline {
-    agent any
-    environment {
-        dockerHubCred = 'docker-cerd' // Credential ID
-        registry = "ongiv"
-        imageName = "test"
-        dockerImage = "${registry}/${imageName}"
-    }
+podTemplate(label: 'docker-build',
+  containers: [
+    containerTemplate(
+      name: 'git',
+      image: 'alpine/git',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+    containerTemplate(
+      name: 'docker',
+      image: 'docker',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+  ],
+  volumes: [
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+  ]
+) {
+    node('docker-build') {
+        def dockerHubCred = 'docker-cerd'
+        def appImage
 
-    stages {
-        stage('Checkout') {
-            steps {
-                container('git') {
-                    checkout scm
+        stage('Checkout'){
+            container('git'){
+                checkout scm
+            }
+        }
+
+        stage('Build'){
+            container('docker'){
+                script {
+                    appImage = docker.build("ongiv/was_test")  // 도커 허브 ID 사용
                 }
             }
         }
 
-        stage('Build') {
-            steps {
-                container('docker') {
-                    script {
-                        // Build Docker image
-                        appImage = docker.build(dockerImage)
+        stage('Test'){
+            container('docker'){
+                script {
+                    appImage.inside {
+                        sh 'npm install'
+                        sh 'npm test'
                     }
                 }
             }
         }
 
-        stage('Test') {
-            steps {
-                container('docker') {
-                    script {
-                        // Run tests inside Docker container
-                        appImage.inside {
-                            sh 'npm install'
-                            sh 'npm test'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Push') {
-            steps {
-                container('docker') {
-                    script {
-                        // Push Docker image to Docker Hub
-                        withCredentials([usernamePassword(credentialsId: dockerHubCred, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                            sh "docker push $dockerImage"
-                        }
+        stage('Push'){
+            container('docker'){
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', dockerHubCred){
+                        appImage.push("${env.BUILD_NUMBER}")
+                        appImage.push("latest")
                     }
                 }
             }
         }
     }
 }
-

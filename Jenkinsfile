@@ -32,8 +32,7 @@ podTemplate(label: 'docker-build',
         stage('Build'){
             container('docker'){
                 script {
-                    sh 'apk add --update git'
-                    appImage = docker.build("ongiv/hello_jenkins")
+                    def appImage = docker.build("ongiv/hello_jenkins:latest")
                 }
             }
         }

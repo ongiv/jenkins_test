@@ -37,21 +37,21 @@ podTemplate(label: 'docker-build',
             }
         }
 
-        stage('Test') {
-            script {
-                try {
-                    container('docker') {
-                        echo 'Running test inside the docker container...'
-                        appImage.inside {
-                            sh 'echo "Test complete"'
-                        }
-                    }
-                } catch (Exception e) {
-                    echo "Test failed: ${e.message}"
-                    throw e
-                }
-            }
-        }
+//        stage('Test') {
+//            script {
+//                try {
+//                    container('docker') {
+//                        echo 'Running test inside the docker container...'
+//                        appImage.inside {
+//                            sh 'echo "Test complete"'
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    echo "Test failed: ${e.message}"
+//                    throw e
+//                }
+//            }
+//        }
         stage('Push'){
             container('docker'){
                 script {

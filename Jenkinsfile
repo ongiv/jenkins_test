@@ -32,7 +32,7 @@ podTemplate(label: 'docker-build',
         stage('Build'){
             container('docker'){
                 script {
-                    docker pull ongiv/hello_jenkins:latest
+                    sh 'docker pull ongiv/hello_jenkins:latest'
                     appImage = docker.build("ongiv/hello_jenkins:latest")
                 }
             }

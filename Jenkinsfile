@@ -62,8 +62,7 @@ podTemplate(label: 'docker-build',
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git config --global user.email "moongb0627@gamil.com"
                         git checkout master
-                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER}
-                        kustomize edit set replicas my-nginx=1
+                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER} && kustomize edit set replicas my-nginx=1
                         git commit -a -m "updated the image tag"
                         git push
                     """)

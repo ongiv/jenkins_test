@@ -7,7 +7,6 @@ podTemplate(label: 'docker-build',
       command: 'cat',
       ttyEnabled: true
     ),
-  ],
     containerTemplate(
       name: 'docker',
       image: 'docker:dind',

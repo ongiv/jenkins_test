@@ -1,13 +1,12 @@
-podTemplate(label: 'docker-build',
   cloud: "kubernetes",
   containers: [
     containerTemplate(
-      name: 'git',
-      image: 'alpine/git',
+      name: 'argo',
+      image: 'argoproj/argo-cd-ci-builder:latest',
       command: 'cat',
-      ttyEnabled: true,
-      alwaysPullImage: true
+      ttyEnabled: true
     ),
+  ],
     containerTemplate(
       name: 'docker',
       image: 'docker:dind',
@@ -24,11 +23,10 @@ podTemplate(label: 'docker-build',
         def appImage
 
         stage('Checkout'){
-            container('git'){
+            container('argo'){
                 checkout scm
             }
         }
-
         stage('Build'){
             container('docker'){
                 script {
@@ -36,22 +34,6 @@ podTemplate(label: 'docker-build',
                 }
             }
         }
-
-//        stage('Test') {
-//            script {
-//                try {
-//                    container('docker') {
-//                        echo 'Running test inside the docker container...'
-//                        appImage.inside {
-//                            sh 'echo "Test complete"'
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    echo "Test failed: ${e.message}"
-//                    throw e
-//                }
-//            }
-//        }
         stage('Push'){
             container('docker'){
                 script {
@@ -59,6 +41,30 @@ podTemplate(label: 'docker-build',
                         appImage.push("${env.BUILD_NUMBER}")
                         appImage.push("latest")
                     }
+                }
+            }
+        }
+        stage('Deploy'){
+            container('argo'){
+                checkout([$class: 'GitSCM',
+                        branches: [[name: '*/main' ]],
+                        extensions: scm.extensions,
+                        userRemoteConfigs: [[
+                            url: 'git@github.com:ongiv/argoCD_test.git',
+                            credentialsId: 'jenkins-ssh-private',
+                        ]]
+                ])
+                sshagent(credentials: ['jenkins-ssh-private']){
+                    sh("""
+                        #!/usr/bin/env bash
+                        set +x
+                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                        git config --global user.email "moongb0627@gamil.com"
+                        git checkout main
+                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER}
+                        git commit -a -m "updated the image tag"
+                        git push
+                    """)
                 }
             }
         }

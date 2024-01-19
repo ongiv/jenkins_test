@@ -32,6 +32,7 @@ podTemplate(label: 'docker-build',
                 checkout([$class: 'GitSCM',
                         branches: [[name: '*/master' ]],
                         extensions: scm.extensions,
+                        doGenerateSubmoduleConfigurations: false, 
                         userRemoteConfigs: [[
                             url: 'git@github.com:ongiv/argoCD_test.git',
                             credentialsId: 'git-login',

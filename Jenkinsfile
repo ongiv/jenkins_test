@@ -51,7 +51,7 @@ podTemplate(label: 'docker-build',
                         extensions: scm.extensions,
                         userRemoteConfigs: [[
                             url: 'git@github.com:ongiv/argoCD_test.git',
-                            credentialsId: 'jenkins-ssh-private',
+                            credentialsId: 'git-login',
                         ]]
                 ])
 //                sshagent(credentials: ['jenkins-ssh-private']){

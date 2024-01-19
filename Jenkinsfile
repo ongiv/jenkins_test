@@ -54,17 +54,17 @@ podTemplate(label: 'docker-build',
                             credentialsId: 'jenkins-ssh-private',
                         ]]
                 ])
-                sshagent(credentials: ['jenkins-ssh-private']){
-                    sh("""
-                        #!/usr/bin/env bash
-                        set +x
-                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
-                        git config --global user.email "moongb0627@gamil.com"
-                        git checkout main
-                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER}
-                        git commit -a -m "updated the image tag"
-                        git push
-                    """)
+//                sshagent(credentials: ['jenkins-ssh-private']){
+//                    sh("""
+//                        #!/usr/bin/env bash
+//                        set +x
+//                        export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+//                        git config --global user.email "moongb0627@gamil.com"
+//                        git checkout main
+//                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER}
+//                        git commit -a -m "updated the image tag"
+//                        git push
+//                    """)
                 }
             }
         }

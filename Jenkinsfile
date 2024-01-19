@@ -35,7 +35,7 @@ podTemplate(label: 'docker-build',
                         doGenerateSubmoduleConfigurations: false, 
                         userRemoteConfigs: [[
                             url: 'git@github.com:ongiv/argoCD_test.git',
-                            credentialsId: 'jenkins-ssh-private',
+                            credentialsId: 'git-login',
                         ]]
                 ])
             }

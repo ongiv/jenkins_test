@@ -30,11 +30,11 @@ podTemplate(label: 'docker-build',
         stage('Deploy'){
             container('argo'){
                 checkout([$class: 'GitSCM',
-                        branches: [[name: '*/main' ]],
+                        branches: [[name: '*/master' ]],
                         extensions: scm.extensions,
                         userRemoteConfigs: [[
                             url: 'git@github.com:ongiv/argoCD_test.git',
-                            credentialsId: 'git-login',
+                            credentialsId: 'jenkins-ssh-private',
                         ]]
                 ])
             }

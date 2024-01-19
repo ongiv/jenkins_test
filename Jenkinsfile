@@ -65,7 +65,7 @@ podTemplate(label: 'docker-build',
 //                        git commit -a -m "updated the image tag"
 //                        git push
 //                    """)
-                }
+//                }
             }
         }
     }

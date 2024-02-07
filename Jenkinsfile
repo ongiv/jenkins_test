@@ -50,14 +50,16 @@ podTemplate(label: 'docker-build',
                     def NGINX_IP="localhost"
                     def NGINX_PORT="80"
 
-                    def response = sh(script: "curl -s http://${NGINX_IP}:${NGINX_PORT}", returnStdout: true).trim()
+                    def response = httpRequest(
+                        httpMode: 'GET',
+                        url: "http://${NGINX_IP}:${NGINX_PORT}"
+                    )
 
                     if (response.contains("nginXdocker")) {
-                      echo "Nginx 페이지에 'nginXdocker' 텍스트가 포함되어 있습니다"
-                      currentBuild.result = 'SUCCESS'
-                    }
-                    else {
-                      error "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
+                        echo "Nginx 페이지에 'nginXdocker' 텍스트가 포함되어 있습니다"
+                        currentBuild.result = 'SUCCESS'
+                    } else {
+                        error "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
                     }
                 }
             }

@@ -51,7 +51,7 @@ podTemplate(label: 'docker-build',
                     def NGINX_IP = "localhost"
                     def NGINX_PORT = "80"
 
-                    container_count=$(docker ps -q | wc -l)
+                    container_count='''docker ps -q | wc -l'''
 
                     if [ "$container_count" -gt 0 ]; then
                         echo "현재 실행 중인 도커 컨테이너가 하나 이상 있습니다."

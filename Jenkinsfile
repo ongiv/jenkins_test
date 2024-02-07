@@ -37,10 +37,17 @@ podTemplate(label: 'docker-build',
         stage('Test'){
             container('docker'){
                 script {
-                    def container_name_pattern = "(nginx|hello_jenkins)"
-                    def container_count = sh(script: "docker ps -q --filter name=${container_name_pattern} | wc -l", returnStatus: true)
+                    sh("""
+                        #!/usr/bin/env bash
+                        container_count=$(docker ps -q | wc -l)
 
-                    echo container_count == 0 ? "현재 실행 중인 컨테이너가 없습니다." : "현재 실행 중인 컨테이너가 있습니다."
+                        if [ "$container_count" -gt 0 ]; then
+                            echo "현재 실행 중인 도커 컨테이너가 하나 이상 있습니다."
+                        else
+                            echo "현재 실행 중인 도커 컨테이너가 없습니다."
+                        fi
+                    """)
+                }
             }
         }
         stage('Push'){

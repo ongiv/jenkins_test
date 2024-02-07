@@ -47,18 +47,18 @@ podTemplate(label: 'docker-build',
         stage('Test'){
             container('docker'){
                 script {
-                    NGINX_IP="localhost"
-                    NGINX_PORT="80"
+                    def NGINX_IP="localhost"
+                    def NGINX_PORT="80"
 
-                    response=$(curl -s http://${NGINX_IP}:${NGINX_PORT})
+                    def response = sh(script: "curl -s http://${NGINX_IP}:${NGINX_PORT}", returnStdout: true).trim()
 
-                    if [[ "$response" == *"nginXdocker"* ]]; then
+                    if (response.contains("nginXdocker")) {
                       echo "Nginx 페이지에 'nginXdocker' 텍스트가 포함되어 있습니다"
-                      exit 0
-                    else
-                      echo "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
-                      exit 1
-                    fi
+                      currentBuild.result = 'SUCCESS'
+                    }
+                    else {
+                      error "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
+                    }
                 }
             }
         }

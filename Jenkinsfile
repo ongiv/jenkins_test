@@ -37,18 +37,15 @@ podTemplate(label: 'docker-build',
         stage('Test'){
             container('docker'){
                 script {
-                    appImage.inside {
-                        // Add your test script here using the NGINX container
-                        def NGINX_IP = "localhost"
-                        def NGINX_PORT = "80"
+                    def container_name_pattern = "(nginx|hello_jenkins)"
 
-                        container_count = sh(script: 'docker ps -q | wc -l', returnStdout: true).trim()
+                    // Check the status of the container(s) on the host machine
+                    def container_count = sh(script: "docker ps -q --filter name=${container_name_pattern} | wc -l", returnStatus: true).trim()
 
-                        if (container_count.toInteger() > 0) {
-                            echo "현재 실행 중인 도커 컨테이너가 하나 이상 있습니다."
-                        } else {
-                            echo "현재 실행 중인 도커 컨테이너가 없습니다."
-                        }
+                    if (container_count.toInteger() > 0) {
+                        echo "현재 실행 중인 컨테이너가 하나 이상 있습니다."
+                    } else {
+                        echo "현재 실행 중인 컨테이너가 없습니다."
                     }
                 }
             }

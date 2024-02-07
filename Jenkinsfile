@@ -44,6 +44,24 @@ podTemplate(label: 'docker-build',
                 }
             }
         }
+        stage('Test'){
+            container('docker'){
+                script {
+                    NGINX_IP="localhost"
+                    NGINX_PORT="80"
+
+                    response=$(curl -s http://${NGINX_IP}:${NGINX_PORT})
+
+                    if [[ "$response" == *"nginXdocker"* ]]; then
+                      echo "Nginx 페이지에 'nginXdocker' 텍스트가 포함되어 있습니다"
+                      exit 0
+                    else
+                      echo "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
+                      exit 1
+                    fi
+                }
+            }
+        }
         stage('Deploy'){
             container('argo'){
                 checkout([$class: 'GitSCM',
@@ -62,7 +80,7 @@ podTemplate(label: 'docker-build',
                         export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
                         git config --global user.email "moongb0627@gamil.com"
                         git checkout master
-                        cd env/dev && kustomize edit set image ongiv/argoCD_test:${BUILD_NUMBER} && kustomize edit set replicas my-nginx=1
+                        cd env/dev && kustomize edit set image ongiv/hello_jenkins:${BUILD_NUMBER} && kustomize edit set replicas my-nginx=1
                         git commit -a -m "updated the image tag"
                         git push
                     """)

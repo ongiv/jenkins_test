@@ -1,14 +1,8 @@
-# 이미지의 베이스를 설정합니다.
-FROM node:14-alpine
+# Nginx 베이스 이미지 사용
+FROM nginx:latest
 
-# 앱 소스 코드를 추가합니다.
-COPY . /app
+# 컨테이너 내부의 기본 HTML 파일 교체
+COPY index.html /usr/share/nginx/html/index.html
 
-# 작업 디렉토리를 설정합니다.
-WORKDIR /app
+EXPOSE 80
 
-# 앱의 종속성을 설치합니다.
-RUN npm install
-
-# 앱 실행을 위한 명령어를 설정합니다.
-CMD ["npm", "start"]

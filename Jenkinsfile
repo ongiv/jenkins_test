@@ -46,9 +46,11 @@ podTemplate(label: 'docker-build',
         }
         stage('Test'){
             container('docker'){
+            steps {
                 script {
-                    def NGINX_IP="localhost"
-                    def NGINX_PORT="80"
+                    def NGINX_IP = "localhost"
+                    def NGINX_PORT = "80"
+
                     // Use sh step to execute curl command
                     def response = sh(script: "curl -s http://${NGINX_IP}:${NGINX_PORT}", returnStdout: true).trim()
 

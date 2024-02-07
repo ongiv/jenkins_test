@@ -43,6 +43,7 @@ podTemplate(label: 'docker-build',
                             search_string="nginXdocker"'
                             [ -f "$file_path" ] && grep -q "$search_string" "$file_path" && echo "live" || echo "error: $file_path"'
                         """)
+                    }
                 }
             }
         }

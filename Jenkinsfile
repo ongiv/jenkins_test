@@ -39,7 +39,7 @@ podTemplate(label: 'docker-build',
                 script {
                     appImage.inside {
                         sh """
-                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "\nginXdocker" "\/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
+                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "nginXdocker" "/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
                         """
                         }
                     }

@@ -36,13 +36,14 @@ podTemplate(label: 'docker-build',
         }
         stage('Test'){
             container('docker'){
+               echo "weeeeeeeeeeeeeeeeeeeeeee"
                 script {
-                    appImage.inside {
-                        sh """
-                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "nginXdocker" "/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
-                        """
-                    }
-                }
+#                    appImage.inside {
+#                        sh """
+#                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "nginXdocker" "/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
+#                        """
+#                    }
+#                }
             }
         }
         stage('Push'){

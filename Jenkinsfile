@@ -38,10 +38,9 @@ podTemplate(label: 'docker-build',
             container('docker'){
                 script {
                     appImage.inside {
-                        withEnv(['file_path=/usr/share/nginx/html/index.html', 'search_string=nginXdocker']) {
-                            sh """
-                                [ -f "\$file_path" ] && grep -q "\$search_string" "\$file_path" && echo "live" || echo "error: \$file_path"
-                            """
+                        sh """
+                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "\nginXdocker" "\/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
+                        """
                         }
                     }
                 }

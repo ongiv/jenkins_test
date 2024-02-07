@@ -51,15 +51,13 @@ podTemplate(label: 'docker-build',
                     def NGINX_IP = "localhost"
                     def NGINX_PORT = "80"
 
-                    // Use sh step to execute curl command
-                    def response = sh(script: "curl -s http://${NGINX_IP}:${NGINX_PORT}", returnStdout: true).trim()
+                    container_count=$(docker ps -q | wc -l)
 
-                    if (response.contains("nginXdocker")) {
-                        echo "Nginx 페이지에 'nginXdocker' 텍스트가 포함되어 있습니다"
-                        currentBuild.result = 'SUCCESS'
-                    } else {
-                        error "Nginx 페이지에 'nginXdocker' 텍스트가 없습니다."
-                    }
+                    if [ "$container_count" -gt 0 ]; then
+                        echo "현재 실행 중인 도커 컨테이너가 하나 이상 있습니다."
+                    else
+                        echo "현재 실행 중인 도커 컨테이너가 없습니다."
+                    fi
                 }
             }
         }

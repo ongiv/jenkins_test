@@ -41,7 +41,10 @@ podTemplate(label: 'docker-build',
 //                        sh """
 //                            [ -f "/usr/share/nginx/html/index.html" ] && grep -q "nginXdocker" "/usr/share/nginx/html/index.html" && echo "good test" || echo "error: /usr/share/nginx/html/index.html"
 //                        """
-                    echo "weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                    
+                    echo "###########################################################################################\n"
+                    echo $(docker ps -q | wc -l)
+
 //                    }
                 }
             }
